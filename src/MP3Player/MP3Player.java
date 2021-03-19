@@ -236,6 +236,11 @@ public class MP3Player
     {
         return _status;
     }
+    
+    public void setSong(String song) throws FileNotFoundException
+    {
+        _song = new FileInputStream(new File(song));
+    }
 }
 
 

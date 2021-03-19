@@ -9,8 +9,10 @@ import java.awt.*;
 
 public class MusicAreaUI
 {
-    private JLabel _label;
-    private JTextField _textField;
+    private JLabel _timeLabel;
+    private JTextField _timeField;
+    private JLabel _songLabel;
+    private JButton _songButton;
     private JButton _confirmButton;
     private JButton _backButton;
     
@@ -35,12 +37,23 @@ public class MusicAreaUI
     }
     
     /**
+     * Initialization of the Labels
+     */
+    private void createLabels()
+    {
+        _timeLabel = new JLabel("Time in minutes/for timer to go:");
+        _songLabel = new JLabel("Songtitle: ");
+    }
+    
+    /**
      * Creates the buttons
      */
     private void createButtons()
     {
         _confirmButton = new JButton("confirm");
         _confirmButton.setEnabled(false);
+        
+        _songButton = new JButton("Load Song!");
         
         _backButton = new JButton("back");
     }
@@ -50,15 +63,7 @@ public class MusicAreaUI
      */
     private void createTextField()
     {
-        _textField = new JTextField("", 5); //number of colomns or dimension
-    }
-    
-    /**
-     * Initialization of the Labels
-     */
-    private void createLabels()
-    {
-        _label = new JLabel("Time in minutes/for timer to go");
+        _timeField = new JTextField("", 5); //number of colomns or dimension
     }
     
     /**
@@ -83,7 +88,15 @@ public class MusicAreaUI
     private JPanel generateToppanel()
     {
         JPanel panel = new JPanel();
-        panel.add(_label);
+        panel.setLayout(new FlowLayout());
+        
+        JPanel panel1 = new JPanel();
+        panel1.add(_timeLabel);
+        panel.add(panel1);
+        
+        JPanel panel2 = new JPanel();
+        panel2.add(_timeField);
+        panel.add(panel2);
         
         return panel;
     }
@@ -95,7 +108,15 @@ public class MusicAreaUI
     private JPanel generateCenterpanel()
     {
         JPanel panel = new JPanel();
-        panel.add(_textField);
+        panel.setLayout(new FlowLayout());
+        
+        JPanel panel1 = new JPanel();
+        panel1.add(_songLabel);
+        panel.add(panel1);
+        
+        JPanel panel2 = new JPanel();
+        panel2.add(_songButton);
+        panel.add(panel2);
         
         return panel;
     }
@@ -128,7 +149,7 @@ public class MusicAreaUI
         _dialog.setTitle("Set Timer");
         _dialog.setLayout(new BorderLayout());
         
-        _dialog.setSize(200,140);
+        _dialog.setSize(350,200);
         
         _dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
         _dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -168,7 +189,22 @@ public class MusicAreaUI
      */
     public JTextField getTextfield()
     {
-        return _textField;
+        return _timeField;
+    }
+    
+    /**
+     * Sets the text of the next song onto the label and removes the path
+     * @param title: Title of the chosen song
+     */
+    public void setSongText(String title)
+    {
+        String song = title;
+        while(song.contains("/")|| song.contains("\\"))
+        {
+            int index = Math.max(song.indexOf("/"),song.indexOf("\\"));
+            song = song.substring(index+1);
+        }
+        _songLabel.setText("Songtitle: "+ song);
     }
     
     /**
@@ -219,5 +255,14 @@ public class MusicAreaUI
     public void close()
     {
         _dialog.dispose();
+    }
+    
+    /**
+     * GetA for the _songButton
+     * @return _songButton
+     */
+    public JButton getSongButton()
+    {
+        return _songButton;
     }
 }

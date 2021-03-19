@@ -1,5 +1,6 @@
 package MusicArea;
 
+import Dateieinleser.DateiEinleser;
 import MP3Player.MP3Player;
 
 import javax.swing.*;
@@ -8,20 +9,25 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class MusicArea
 {
     private MusicAreaUI _ui;
     private MP3Player _player;
+    //    private String _activeSong;
     
     private PropertyChangeSupport _support; //basically observable just newer
     
     public MusicArea(MP3Player player, JFrame frame)
     {
         _player = player;
+        //        _activeSong = MP3Player.DEFAULTSONG;
         _support = new PropertyChangeSupport(this);
         _ui = new MusicAreaUI();
-        _ui.setPosition(new Point(frame.getLocation().x + 100, frame.getLocation().y + 100)); //Sets position based on the mainframe
+        _ui.setPosition(new Point(frame.getLocation().x, frame.getLocation().y)); //Sets position based on the mainframe
+        _ui.setSongText(MP3Player.DEFAULTSONG);
         addListener();
     }
     
@@ -30,6 +36,7 @@ public class MusicArea
      * BackButton.actionlistener: just closes
      * TextField.keylistener: checks the validity of the entry
      * Textfield.actionlistener: Shortcut to confirmButton
+     * SongButton.actionlistener: Opens Filechooser to pick song
      * ConfirmButton.actionlistener: Processing of the entry
      */
     private void addListener()
@@ -66,6 +73,29 @@ public class MusicArea
             _ui.getConfirmButton().doClick(); //doClick() automatically checks "isEnabled()"
         });
         
+        //Opens a JFileChooser when _stopButton is clicked
+        _ui.getSongButton().addActionListener(event ->
+        {
+            File bilddaten = DateiEinleser.liesBilddaten();
+            //if (bilddaten != null)
+            //{
+            //_activeSong = ;
+            try
+            {
+                String newSong = bilddaten.getPath();
+                _player.setSong(newSong);
+                System.out.println(newSong);
+                _ui.setSongText(newSong);
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+            
+            //_ui.setSongText(_activeSong);
+            //            }
+        });
+        
         //Actual action if the _confirmButton gets used and processes the entry
         _ui.getConfirmButton().addActionListener(event ->
         {
@@ -92,11 +122,11 @@ public class MusicArea
      */
     private boolean isValid(String tmp)
     {
-        if (tmp.matches("\\d+")) //|| tmp.matches("\\d{1,2}:\\d{2}")
-        {
-            return true;
-        }
-        return false;
+        return (tmp.matches("\\d+")); //|| tmp.matches("\\d{1,2}:\\d{2}")
+//        {
+//            return true;
+//        }
+//        return false;
     }
     
     /**

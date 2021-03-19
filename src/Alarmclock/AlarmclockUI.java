@@ -12,6 +12,7 @@ public class AlarmclockUI
     private JLabel _timerLabel;
     private JButton _stopButton;
     private JButton _timerButton;
+//    private JButton _testButton;
     private JButton _closeButton;
     
     private JFrame _mainframe;
@@ -45,6 +46,7 @@ public class AlarmclockUI
     {
         _stopButton = new JButton("Stop");
         _timerButton = new JButton("Start Timer!");
+//        _testButton = new JButton("Datei laden!");
         _closeButton = new JButton("Close");
     }
     
@@ -77,6 +79,8 @@ public class AlarmclockUI
     private JPanel buildClosePanel()
     {
         JPanel closePanel = new JPanel();
+        closePanel.setLayout(new FlowLayout());
+//        closePanel.add(_testButton);
         closePanel.add(_closeButton);
         
         return closePanel;
@@ -110,7 +114,16 @@ public class AlarmclockUI
     {
         return _timerButton;
     }
-
+    
+//    /**
+//     * GetA for testbutton
+//     * @return _testButton
+//     */
+//    public JButton getTestButton()
+//    {
+//        return _testButton;
+//    }
+    
     /**
      * Returns the declining _closeButton
      * @return _closeButton

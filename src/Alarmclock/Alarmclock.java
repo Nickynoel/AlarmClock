@@ -1,8 +1,11 @@
 package Alarmclock;
 
+import Dateieinleser.DateiEinleser;
 import MP3Player.MP3Player;
 import MusicArea.MusicArea;
 
+import javax.swing.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 public class Alarmclock
@@ -77,6 +80,26 @@ public class Alarmclock
             area.showUI();
         });
         
+        //listener to open file, for tests
+//        _ui.getTestButton().addActionListener(event ->
+//        {
+//            File bilddaten = DateiEinleser.liesBilddaten();
+//            if (bilddaten != null)
+//            {
+//                try
+//                {
+//                    MP3Player player = MP3Player.getInstance(bilddaten.getPath());
+//                    player.addToQueue(0);
+//                }
+//                catch (FileNotFoundException e)
+//                {
+//                    e.printStackTrace();
+//                }
+//            }
+//            System.out.println(bilddaten.getPath());
+//        });
+        
+        //listener for closing
         _ui.getCloseButton().addActionListener(event ->
         {
             closeUI();
