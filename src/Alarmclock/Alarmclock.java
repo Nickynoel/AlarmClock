@@ -1,12 +1,7 @@
 package Alarmclock;
 
-import Dateieinleser.DateiEinleser;
 import MP3Player.MP3Player;
 import MusicArea.MusicArea;
-
-import javax.swing.*;
-import java.io.File;
-import java.io.FileNotFoundException;
 
 public class Alarmclock
 {
@@ -16,24 +11,9 @@ public class Alarmclock
     public Alarmclock()
     {
         _ui = new AlarmclockUI();
-        loadPlayer();
+        _player = MP3Player.getInstance();
         addMP3PlayerListener();
         addUIListener();
-    }
-    
-    /**
-     * Initializes the MP3Player
-     */
-    private void loadPlayer()
-    {
-        try
-        {
-            _player = MP3Player.getInstance(MP3Player.DEFAULTSONG);
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
     }
     
     /**
@@ -43,7 +23,7 @@ public class Alarmclock
     {
         _player.addPropertyChangeListener(evt ->
         {
-            //_ui.changeMusicStatus(_player.getStatus());
+            _ui.changeMusicStatus(_player.getStatus());
         });
     }
     
@@ -63,8 +43,8 @@ public class Alarmclock
         {
             _player.quit();
             _ui.changeMusicStatus(_player.getStatus());
-            closeUI();
-            new Alarmclock();
+//            closeUI();
+//            new Alarmclock();
         });
 
         //listener for the timer
@@ -73,31 +53,12 @@ public class Alarmclock
             final MusicArea area = new MusicArea(_player, _ui.getMainframe());
             area.addPropertyChangeListener(evt ->
             {
-                //_player.addToQueue(number);
+//                _player.addToQueue(number);
                 _ui.setTimerLabelText(_player.getNextSongTime());
-                _ui.changeMusicStatus(_player.getStatus());
+//                _ui.changeMusicStatus(_player.getStatus());
             });
             area.showUI();
         });
-        
-        //listener to open file, for tests
-//        _ui.getTestButton().addActionListener(event ->
-//        {
-//            File bilddaten = DateiEinleser.liesBilddaten();
-//            if (bilddaten != null)
-//            {
-//                try
-//                {
-//                    MP3Player player = MP3Player.getInstance(bilddaten.getPath());
-//                    player.addToQueue(0);
-//                }
-//                catch (FileNotFoundException e)
-//                {
-//                    e.printStackTrace();
-//                }
-//            }
-//            System.out.println(bilddaten.getPath());
-//        });
         
         //listener for closing
         _ui.getCloseButton().addActionListener(event ->

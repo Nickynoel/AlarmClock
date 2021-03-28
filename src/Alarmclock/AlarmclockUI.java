@@ -12,7 +12,6 @@ public class AlarmclockUI
     private JLabel _timerLabel;
     private JButton _stopButton;
     private JButton _timerButton;
-//    private JButton _testButton;
     private JButton _closeButton;
     
     private JFrame _mainframe;
@@ -27,7 +26,7 @@ public class AlarmclockUI
         createWindow();
         
         initializeWindow();
-        
+        disableStopButton();
         _mainframe.setVisible(true);
     }
     
@@ -46,7 +45,6 @@ public class AlarmclockUI
     {
         _stopButton = new JButton("Stop");
         _timerButton = new JButton("Start Timer!");
-//        _testButton = new JButton("Datei laden!");
         _closeButton = new JButton("Close");
     }
     
@@ -76,27 +74,33 @@ public class AlarmclockUI
         _mainframe.add(buildClosePanel());
     }
     
-    private JPanel buildClosePanel()
-    {
-        JPanel closePanel = new JPanel();
-        closePanel.setLayout(new FlowLayout());
-//        closePanel.add(_testButton);
-        closePanel.add(_closeButton);
-        
-        return closePanel;
-    }
-    
+    /**
+     * The upper of the two mainpanels
+     * @return timerPanel
+     */
     private JPanel buildTimerPanel()
     {
         JPanel timerPanel = new JPanel();
         timerPanel.setLayout(new FlowLayout());
         timerPanel.add(_timerLabel);
         timerPanel.add(_stopButton);
-        timerPanel.add(_timerButton);
         return timerPanel;
     }
     
-
+    /**
+     * The lower of the two mainpanels
+     * @return closepanel
+     */
+    private JPanel buildClosePanel()
+    {
+        JPanel closePanel = new JPanel();
+        closePanel.setLayout(new FlowLayout());
+        closePanel.add(_timerButton);
+        closePanel.add(_closeButton);
+        
+        return closePanel;
+    }
+    
     /**
      * Returns the stopbutton
      * @return _stopButton
@@ -114,15 +118,6 @@ public class AlarmclockUI
     {
         return _timerButton;
     }
-    
-//    /**
-//     * GetA for testbutton
-//     * @return _testButton
-//     */
-//    public JButton getTestButton()
-//    {
-//        return _testButton;
-//    }
     
     /**
      * Returns the declining _closeButton

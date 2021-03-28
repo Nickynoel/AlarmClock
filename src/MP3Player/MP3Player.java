@@ -1,8 +1,5 @@
 package MP3Player;
 
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -39,30 +36,38 @@ public class MP3Player
     
     /**
      * Constructor for class MP3Player
-     *
-     * @param file Musicfile for the player
      */
-    private MP3Player(FileInputStream file)
+    private MP3Player()
     {
-        _song = file;
         _songThreads = new ArrayList<>();
+        loadPlayer();
         //_volume = 0; //volume-control, should be set to 0.05f
         setOutputVolume(0.05f);
         _status = 0;
-        
         _support = new PropertyChangeSupport(this);
     }
     
     /**
-     * Factory Method to generate an object of the class MP3Player, given a certain musicfile-path
-     *
-     * @param filepath the path to a musicfile as string
-     * @return the object of class MP3Player
-     * @throws FileNotFoundException if the String does not lead to a an actual file
+     * Factory Method to generate an object of the class MP3Player
      */
-    public static MP3Player getInstance(String filepath) throws FileNotFoundException
+    public static MP3Player getInstance()
     {
-        return new MP3Player(new FileInputStream(new File(filepath)));
+        return new MP3Player();
+    }
+    
+    /**
+     * Starts the Player with the Defaultsong
+     */
+    private void loadPlayer()
+    {
+        try
+        {
+            _song = new FileInputStream(new File(DEFAULTSONG));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -93,13 +98,23 @@ public class MP3Player
         }
     }
     
-    /**
-     * Adds a time at which the song should be played to the queue with a given delay
-     * (for now: only one request at a time)
-     * TODO: Delays in their own threads, but getting outside run() into inner class...
-     *
-     * @param delay the downtime till the song should be played
-     */
+    //    /**
+    //     * Adds a time at which the song should be played to the queue with a given delay
+    //     * (for now: only one request at a time)
+    //     * TODO: Delays in their own threads, but getting outside run() into inner class...
+    //     *
+    //     * @param delay the downtime till the song should be played
+    //     */
+    //    public void addToQueue(int delay)
+    //    {
+    //        assert (delay >= 0) : "Delay must not be negative!";
+    //        assert (_status == 0) : "For now only one songrequest at a time";
+    //        _nextSongTime = Calendar.getInstance();
+    //        _nextSongTime.add(Calendar.MINUTE, delay);
+    //        change(2);
+    //        run(delay); //Delay needs to be in a thread as well !!!
+    //    }
+    
     public void addToQueue(int delay)
     {
         assert (delay >= 0) : "Delay must not be negative!";
@@ -107,7 +122,7 @@ public class MP3Player
         _nextSongTime = Calendar.getInstance();
         _nextSongTime.add(Calendar.MINUTE, delay);
         change(2);
-        run(delay); //Delay needs to be in a thread as well !!!
+        run(delay);
     }
     
     //    /**
@@ -147,7 +162,8 @@ public class MP3Player
      */
     private void run(int delay)
     {
-        MP3PlayerThread songThread = new MP3PlayerThread(_song);
+        MP3PlayerThread songThread = new MP3PlayerThread(delay, _song);
+        change(2);
         _songThreads.add(songThread);
         songThread.start();
     }
@@ -164,6 +180,7 @@ public class MP3Player
         //System.out.println(_status);
         confirmChange(i);
     }
+    
     
     /**
      * GetA for the Threads that play the songs
@@ -184,13 +201,13 @@ public class MP3Player
     {
         String hours = Integer.toString(_nextSongTime.get(Calendar.HOUR_OF_DAY));
         String minutes = Integer.toString(_nextSongTime.get(Calendar.MINUTE));
-        if (minutes.length()==1)
+        if (minutes.length() == 1)
         {
             minutes = "0" + minutes;
         }
-        String time = hours + ":" + minutes;
-        return time;
+        return hours + ":" + minutes;
     }
+    
     
     /**
      * Quits the currently running song, if any is running
@@ -198,7 +215,7 @@ public class MP3Player
      */
     public void quit()
     {
-        if (_songThreads.size()>0)
+        if (_songThreads.size() > 0)
         {
             //_songThreads.get(0).stop();
             _songThreads.get(0).kill();
@@ -237,6 +254,12 @@ public class MP3Player
         return _status;
     }
     
+    /**
+     * Method that changes the song that's gonna be played next
+     *
+     * @param song String with the Datapath of the sond
+     * @throws FileNotFoundException Datapath has to be valid
+     */
     public void setSong(String song) throws FileNotFoundException
     {
         _song = new FileInputStream(new File(song));

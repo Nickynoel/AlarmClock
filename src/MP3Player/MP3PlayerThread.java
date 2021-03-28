@@ -4,44 +4,67 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 import java.io.FileInputStream;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Class that handles the playing of a song on an extra Thread
+ */
 
 public class MP3PlayerThread extends Thread
 {
     private FileInputStream _song;
     private Player _player;
-    private boolean run;
+    private boolean _threadLife;
+    private boolean _playerLife;
+    private int _delay;
     
-    public MP3PlayerThread(FileInputStream song)
+    /**
+     * Constructor for the special Thread-class for each song
+     * @param delay the delay until the song is supposed to be played
+     * @param song the song to be played
+     */
+    public MP3PlayerThread(int delay,FileInputStream song)
     {
-        run = true;
+        _delay = delay;
+        _threadLife = true;
+        _playerLife = false;
         _song = song;
-        
     }
-    
+
+    @Override
     public void run()
     {
         try
         {
-            while (run)
+            while (_threadLife)
             {
+                TimeUnit.SECONDS.sleep(_delay);
+                _playerLife = true;
                 _player = new Player(_song);
                 _player.play();
+                _playerLife = false;
             }
             //TimeUnit.MINUTES.sleep(delay);
             //change(1);
             
             //change(0);
         }
-        catch (JavaLayerException e)
+        catch (JavaLayerException | InterruptedException e)
         {
             System.out.println(e);
         }
     }
     
+    /**
+     * Method that ends the thread (hopefully)
+     */
     public void kill()
     {
-        run = false;
-        _player.close();
+        _threadLife = false;
+        if (_playerLife)
+        {
+            _player.close();
+        }
         this.interrupt();
     }
     
