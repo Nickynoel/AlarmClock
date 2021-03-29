@@ -3,11 +3,20 @@ package Alarmclock;
 import MP3Player.MP3Player;
 import MusicArea.MusicArea;
 
+/**
+ * Main functional class of the Alarmclock, consisting of:
+ * _ui: UI to navigate
+ * _player: MP3Player to play music
+ */
+
 public class Alarmclock
 {
     private AlarmclockUI _ui;
     private MP3Player _player;
     
+    /**
+     * Constructor of the class Alarmclock
+     */
     public Alarmclock()
     {
         _ui = new AlarmclockUI();
@@ -53,9 +62,7 @@ public class Alarmclock
             final MusicArea area = new MusicArea(_player, _ui.getMainframe());
             area.addPropertyChangeListener(evt ->
             {
-//                _player.addToQueue(number);
                 _ui.setTimerLabelText(_player.getNextSongTime());
-//                _ui.changeMusicStatus(_player.getStatus());
             });
             area.showUI();
         });

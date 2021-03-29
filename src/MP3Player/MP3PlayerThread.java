@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Class that handles the playing of a song on an extra Thread
+ * TODO: Statuschange
  */
 
 public class MP3PlayerThread extends Thread
@@ -30,7 +31,10 @@ public class MP3PlayerThread extends Thread
         _playerLife = false;
         _song = song;
     }
-
+    
+    /**
+     * run method, that will be used on a new thread by calling the start method
+     */
     @Override
     public void run()
     {
@@ -56,7 +60,7 @@ public class MP3PlayerThread extends Thread
     }
     
     /**
-     * Method that ends the thread (hopefully)
+     * Method that ends the thread after stopping the song if it is running
      */
     public void kill()
     {

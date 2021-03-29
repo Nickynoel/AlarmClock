@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * UI of OptionArea
+ * UI of Alarmclock
  */
 
 public class AlarmclockUI
@@ -17,7 +17,7 @@ public class AlarmclockUI
     private JFrame _mainframe;
     
     /**
-     * Initializing the UI
+     * Constructor of the UI
      */
     public AlarmclockUI()
     {
@@ -32,6 +32,7 @@ public class AlarmclockUI
     
     /**
      * Creates the Labels
+     * TODO: This Label
      */
     private void createLabels()
     {
@@ -40,6 +41,7 @@ public class AlarmclockUI
     
     /**
      * Creates the buttons
+     * TODO: Pause/Unpause Buttons?
      */
     private void createButtons()
     {
@@ -66,7 +68,7 @@ public class AlarmclockUI
     }
     
     /**
-     * Puts JButtons onto the JFrame
+     * Adds panels onto the _mainframe
      */
     private void initializeWindow()
     {
@@ -129,14 +131,6 @@ public class AlarmclockUI
     }
 
     /**
-     * Closes the UI
-     */
-    public void close()
-    {
-        _mainframe.dispose();
-    }
-    
-    /**
      * Returns the mainframe
      * @return _mainframe
      */
@@ -147,7 +141,7 @@ public class AlarmclockUI
     
     /**
      * Changes the UI depending on how the MP3-Player's status is
-     *
+     * TODO: Pausebutton???
      * @param status: MP3Player._status, {0,1,2} at the moment
      */
     public void changeMusicStatus(int status)
@@ -175,6 +169,14 @@ public class AlarmclockUI
     public void setTimerLabelText(String text)
     {
         _timerLabel.setText(text);
+    }
+    
+    /**
+     * Closes the UI
+     */
+    public void close()
+    {
+        _mainframe.dispose();
     }
     
     /**

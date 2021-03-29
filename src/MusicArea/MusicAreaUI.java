@@ -167,14 +167,6 @@ public class MusicAreaUI
     }
     
     /**
-     * Sets the UI's title
-     */
-    public void setTitle(String s)
-    {
-        _dialog.setTitle(s);
-    }
-    
-    /**
      * Sets the UI to a certain point
      * @param p: Point for positioning the JDialog
      */
@@ -184,8 +176,8 @@ public class MusicAreaUI
     }
     
     /**
-     * Returns the textfield of the UI
-     * @return _textField
+     * Returns the timefield of the UI
+     * @return _timeField
      */
     public JTextField getTextfield()
     {

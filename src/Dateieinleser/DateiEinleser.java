@@ -1,14 +1,7 @@
 package Dateieinleser;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.File;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
@@ -21,8 +14,7 @@ public class DateiEinleser
     private static JFileChooser _fileChooser = null;
     
     /**
-     * Lies eine GIF-Datei ein und liefere die Bilddaten als Array. Die Datei wird interaktiv vom
-     * Benutzer gewaehlt.
+     * Lies eine Datei ein und liefere diese. Die Datei wird interaktiv vom Benutzer gewaehlt.
      */
     public static File liesBilddaten()
     {

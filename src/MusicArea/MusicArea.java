@@ -12,22 +12,30 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+
+/**
+ * Functional class of the MusicArea, the part in which the song and time are being chosen,
+ * consisting of a UI and an MP3Player
+ */
 public class MusicArea
 {
     private MusicAreaUI _ui;
     private MP3Player _player;
-    //    private String _activeSong;
     
     private PropertyChangeSupport _support; //basically observable just newer
     
+    /**
+     * Constructor of the class
+     * @param player The MP3Player that plays the song
+     * @param frame The JFrame of the AlarmClockUI to balance the positioning of the new UI
+     */
     public MusicArea(MP3Player player, JFrame frame)
     {
         _player = player;
-        //        _activeSong = MP3Player.DEFAULTSONG;
         _support = new PropertyChangeSupport(this);
         _ui = new MusicAreaUI();
         _ui.setPosition(new Point(frame.getLocation().x, frame.getLocation().y)); //Sets position based on the mainframe
-        _ui.setSongText(MP3Player.DEFAULTSONG);
+        _ui.setSongText(_player.getSongname());
         addListener();
     }
     
@@ -76,24 +84,18 @@ public class MusicArea
         //Opens a JFileChooser when _stopButton is clicked
         _ui.getSongButton().addActionListener(event ->
         {
-            File bilddaten = DateiEinleser.liesBilddaten();
-            //if (bilddaten != null)
-            //{
-            //_activeSong = ;
+            File songfile = DateiEinleser.liesBilddaten();
             try
             {
-                String newSong = bilddaten.getPath();
+                String newSong = songfile.getPath();
                 _player.setSong(newSong);
-                System.out.println(newSong);
                 _ui.setSongText(newSong);
             }
             catch (FileNotFoundException e)
             {
                 e.printStackTrace();
             }
-            
-            //_ui.setSongText(_activeSong);
-            //            }
+            _ui.setSongText(_player.getSongname());
         });
         
         //Actual action if the _confirmButton gets used and processes the entry
@@ -116,17 +118,13 @@ public class MusicArea
     
     /**
      * Checks if the input/given string is a number or a negative number
-     *
+     * TODO: the other matches part
      * @param tmp: checked entry
      * @return boolean: validity of the string
      */
     private boolean isValid(String tmp)
     {
         return (tmp.matches("\\d+")); //|| tmp.matches("\\d{1,2}:\\d{2}")
-//        {
-//            return true;
-//        }
-//        return false;
     }
     
     /**
