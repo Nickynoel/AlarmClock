@@ -26,6 +26,8 @@ public class MP3PlayerThread extends Thread
      */
     public MP3PlayerThread(int delay,FileInputStream song)
     {
+        assert delay >= 0 : "Delay must not be negative!";
+        assert song != null : "Song is null!";
         _delay = delay;
         _threadLife = true;
         _playerLife = false;

@@ -20,9 +20,9 @@ public class Alarmclock
     public Alarmclock()
     {
         _ui = new AlarmclockUI();
+        addUIListener();
         _player = MP3Player.getInstance();
         addMP3PlayerListener();
-        addUIListener();
     }
     
     /**
@@ -30,7 +30,7 @@ public class Alarmclock
      */
     private void addMP3PlayerListener()
     {
-        _player.addPropertyChangeListener(evt ->
+        _player.addPropertyChangeListener(event ->
         {
             _ui.changeMusicStatus(_player.getStatus());
         });
@@ -38,36 +38,64 @@ public class Alarmclock
     
     /**
      * Adds the listeners of all components in the UI:
-     * TitleButton.actionlistener: Opens TopicEditArea and gives it an observer
-     * AddButton.actionlistener: Opens AddArea and gives it an observer
      * StopButton.actionlistener: Stops the song
      * TimerButton.actionlistener: Opens MusicArea and gives it an observer
-     * SaveButton.actionlistener: Saves the topic-values onto the file TopicList.FILENAME
-     * OptionButton.actionlistener: Closes window and opens OptionArea
+     * CloseButton.actionlistener: Closes window
      */
     private void addUIListener()
     {
-        //listener to stop the song
+        addStopButtonListener();
+        addTimerButtonListener();
+        addCloseButtonListener();
+    }
+    
+    /**
+     * Listener to stop the song
+     */
+    private void addStopButtonListener()
+    {
         _ui.getStopButton().addActionListener(event ->
         {
             _player.quit();
             _ui.changeMusicStatus(_player.getStatus());
-//            closeUI();
-//            new Alarmclock();
+            //            closeUI();
+            //            new Alarmclock();
         });
-
-        //listener for the timer
+    }
+    
+    /**
+     * Listener for the timer
+     */
+    private void addTimerButtonListener()
+    {
         _ui.getTimerButton().addActionListener(event ->
         {
-            final MusicArea area = new MusicArea(_player, _ui.getMainframe());
-            area.addPropertyChangeListener(evt ->
-            {
-                _ui.setTimerLabelText(_player.getNextSongTime());
-            });
+            final MusicArea area = new MusicArea(_player);
+            area.setUiPosition(_ui.getPosition());
+            addMusicAreaListener(area);
+
             area.showUI();
         });
-        
-        //listener for closing
+    }
+    
+    /**
+     * Adds the Propertychangelistener to a Musicarea
+     * @param area
+     */
+    private void addMusicAreaListener(MusicArea area)
+    {
+        assert area != null: "Musicarea is null";
+        area.addPropertyChangeListener(evt ->
+        {
+            _ui.setTimerLabelText("Next song starts at: " + _player.getNextSongTime());
+        });
+    }
+    
+    /**
+     * Listener for the CloseButton
+     */
+    private void addCloseButtonListener()
+    {
         _ui.getCloseButton().addActionListener(event ->
         {
             closeUI();

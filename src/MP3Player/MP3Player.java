@@ -21,13 +21,14 @@ import javax.sound.sampled.Port;
 
 public class MP3Player
 {
-    public static String DEFAULTSONG = "D:/Musik/Archangel.mp3";
+    //public static String DEFAULTSONG = "D:/Musik/Edge Of Paradise  - Fire2.mp3"; //Maybe load song from a file
     
-    private String _songname;
+    private String _songpath;
     private FileInputStream _song;
     private List<MP3PlayerThread> _songThreads;
     private float _volume;
     private int _status; //0: off, 1: on, 2: waiting
+    private boolean _songValidity;
     
     private Calendar _nextSongTime;
     private PropertyChangeSupport _support; //basically observable just newer
@@ -38,7 +39,7 @@ public class MP3Player
     private MP3Player()
     {
         _songThreads = new ArrayList<>();
-        loadPlayer();
+        //loadPlayer();
         setOutputVolume(0.05f); //volume-control, should be set to 0.05f if you dont want your ears to die
         _status = 0;
         _support = new PropertyChangeSupport(this);
@@ -57,15 +58,17 @@ public class MP3Player
      */
     private void loadPlayer()
     {
-        try
-        {
-            _song = new FileInputStream(new File(DEFAULTSONG));
-            _songname = DEFAULTSONG;
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+//        try
+//        {
+//            _song = new FileInputStream(new File(DEFAULTSONG));
+//            _songname = DEFAULTSONG;
+//            _songValidity = true;
+//        }
+//        catch (FileNotFoundException e)
+//        {
+//            _songname = "No valid File!";
+//            _songValidity = false;
+//        }
     }
     
     /**
@@ -105,43 +108,14 @@ public class MP3Player
     public void addToQueue(int delay)
     {
         assert (delay >= 0) : "Delay must not be negative!";
-        assert (_status == 0) : "For now only one songrequest at a time";
-        _nextSongTime = Calendar.getInstance();
-        _nextSongTime.add(Calendar.MINUTE, delay);
-        change(2);
-        run(delay);
+        if (_status == 0)  //"For now only one songrequest at a time";
+        {
+            _nextSongTime = Calendar.getInstance();
+            _nextSongTime.add(Calendar.MINUTE, delay);
+            change(2);
+            run(delay);
+        }
     }
-    
-    
-    //    /**
-    //     * Plays the song on the given Thread and commits the change
-    //     *
-    //     * @param delay: delay until the song is to be played
-    //     */
-    //    private void run(int delay)
-    //    {
-    //        Thread songThread = new Thread(new Runnable()
-    //        {
-    //            @Override
-    //            public void run()
-    //            {
-    //                try
-    //                {
-    //                    TimeUnit.MINUTES.sleep(delay);
-    //                    Player playMP3 = new Player(_song);
-    //                    change(1);
-    //                    playMP3.play();
-    //                    change(0);
-    //                }
-    //                catch (JavaLayerException | InterruptedException e)
-    //                {
-    //                    System.out.println(e);
-    //                }
-    //            }
-    //        });
-    //        _songThreads.add(songThread);
-    //        songThread.start();
-    //    }
     
     /**
      * Plays the song on the given Thread and commits the change
@@ -150,6 +124,7 @@ public class MP3Player
      */
     private void run(int delay)
     {
+        assert (delay >= 0) : "Delay must not be negative!";
         MP3PlayerThread songThread = new MP3PlayerThread(delay, _song);
         change(2);
         _songThreads.add(songThread);
@@ -175,6 +150,7 @@ public class MP3Player
      */
     private void confirmChange(int number)
     {
+        assert (number == 0 || number == 1 || number == 2) : "Only 3 viable _status-values";
         _support.firePropertyChange("Test", -1, number);
     }
     
@@ -185,6 +161,7 @@ public class MP3Player
      */
     public void addPropertyChangeListener(PropertyChangeListener pcl)
     {
+        assert pcl != null : "Object is null!";
         _support.addPropertyChangeListener(pcl);
     }
     
@@ -195,18 +172,12 @@ public class MP3Player
      */
     public String getSongname()
     {
-        return _songname;
+        if (_song == null)
+        {
+            return "Choose a song!";
+        }
+        return _songpath;
     }
-    
-//    /**
-//     * GetA for the Threads that play the songs
-//     *
-//     * @return _songThreads
-//     */
-//    public List<MP3PlayerThread> getSongThreads()
-//    {
-//        return _songThreads;
-//    }
     
     /**
      * Returns a String of the time the next song is played
@@ -238,13 +209,14 @@ public class MP3Player
     /**
      * Method that changes the song that's gonna be played next
      *
-     * @param song String with the Datapath of the sond
+     * @param songpath String with the Datapath of the sond
      * @throws FileNotFoundException Datapath has to be valid
      */
-    public void setSong(String song) throws FileNotFoundException
+    public void setSong(String songpath) throws FileNotFoundException
     {
-        _song = new FileInputStream(new File(song));
-        _songname = song;
+        _song = new FileInputStream(new File(songpath));
+        _songpath = songpath;
+        _songValidity = true;
     }
     
     /**
@@ -258,6 +230,15 @@ public class MP3Player
             _songThreads.remove(0);
         }
         change(0);
+    }
+    
+    /**
+     * Checks if the file is a playable song
+     * @return boolean: Validity of the song
+     */
+    public boolean isValidSong()
+    {
+        return _songValidity;
     }
 }
 

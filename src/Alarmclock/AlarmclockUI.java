@@ -59,9 +59,9 @@ public class AlarmclockUI
         _mainframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //Schließt Fenster
         _mainframe.setLocationRelativeTo(null);
         _mainframe.setTitle("Alarmclock");
-        _mainframe.setLayout(new GridLayout(2,1));
+        _mainframe.setLayout(new GridLayout(2, 1));
         
-        _mainframe.setSize(400,150);
+        _mainframe.setSize(400, 150);
         
         _mainframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         //_mainframe.setResizable(false);
@@ -78,6 +78,7 @@ public class AlarmclockUI
     
     /**
      * The upper of the two mainpanels
+     *
      * @return timerPanel
      */
     private JPanel buildTimerPanel()
@@ -91,6 +92,7 @@ public class AlarmclockUI
     
     /**
      * The lower of the two mainpanels
+     *
      * @return closepanel
      */
     private JPanel buildClosePanel()
@@ -105,15 +107,17 @@ public class AlarmclockUI
     
     /**
      * Returns the stopbutton
+     *
      * @return _stopButton
      */
     public JButton getStopButton()
     {
         return _stopButton;
     }
-
+    
     /**
      * Returns the timerbutton
+     *
      * @return _timerButton
      */
     public JButton getTimerButton()
@@ -123,15 +127,17 @@ public class AlarmclockUI
     
     /**
      * Returns the declining _closeButton
+     *
      * @return _closeButton
      */
     public JButton getCloseButton()
     {
         return _closeButton;
     }
-
+    
     /**
      * Returns the mainframe
+     *
      * @return _mainframe
      */
     public JFrame getMainframe()
@@ -142,6 +148,7 @@ public class AlarmclockUI
     /**
      * Changes the UI depending on how the MP3-Player's status is
      * TODO: Pausebutton???
+     *
      * @param status: MP3Player._status, {0,1,2} at the moment
      */
     public void changeMusicStatus(int status)
@@ -152,7 +159,7 @@ public class AlarmclockUI
             case 0:
                 disableStopButton();
                 enableTimerButton();
-                _timerLabel.setText("No Timer Set");
+                setTimerLabelText("No Timer Set");
                 break;
             case 1:
             case 2:
@@ -168,7 +175,19 @@ public class AlarmclockUI
      */
     public void setTimerLabelText(String text)
     {
-        _timerLabel.setText(text);
+        assert text != null : "text is null!";
+        
+        _timerLabel.setText("<html><span style='font-size:11px'>" + text + "</span></html>");
+    }
+    
+    /**
+     * Returns the topleft point of the UI, to place other UI's on top of it
+     *
+     * @return the topleft point of the UI
+     */
+    public Point getPosition()
+    {
+        return _mainframe.getLocation();
     }
     
     /**

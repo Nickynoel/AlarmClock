@@ -27,14 +27,14 @@ public class MusicArea
     /**
      * Constructor of the class
      * @param player The MP3Player that plays the song
-     * @param frame The JFrame of the AlarmClockUI to balance the positioning of the new UI
      */
-    public MusicArea(MP3Player player, JFrame frame)
+    public MusicArea(MP3Player player)
     {
+        assert player != null: "Player must not be null!";
+        
         _player = player;
         _support = new PropertyChangeSupport(this);
         _ui = new MusicAreaUI();
-        _ui.setPosition(new Point(frame.getLocation().x, frame.getLocation().y)); //Sets position based on the mainframe
         _ui.setSongText(_player.getSongname());
         addListener();
     }
@@ -49,12 +49,29 @@ public class MusicArea
      */
     private void addListener()
     {
-        //Leaves if just going back
+        addBackButtonListener();
+        addTextfieldKeyListener();
+        addTextfieldActionListener();
+        addSongButtonActionlistener();
+        addConfirmButtonActionlistener();
+    }
+    
+    /**
+     * Actionlistener for the BackButton, closes the window without action taken
+     */
+    private void addBackButtonListener()
+    {
         _ui.getBackButton().addActionListener(event ->
         {
             _ui.close();
         });
-        
+    }
+    
+    /**
+     * KeyListener for the Textfield, checking the text and the resulting availability of the ConfirmButton
+     */
+    private void addTextfieldKeyListener()
+    {
         //If the text gets changed it checks it anew and controls the availability of the button
         _ui.getTextfield().addKeyListener(new KeyAdapter()
         {
@@ -62,42 +79,62 @@ public class MusicArea
             public void keyReleased(KeyEvent e)
             {
                 super.keyReleased(e);
-                String tmp = _ui.getTextfield().getText();
-                if (isValid(tmp))
-                {
-                    _ui.enableConfirmButton();
-                }
-                else
-                {
-                    _ui.disableConfirmButton();
-                }
-                
+                checkButton();
             }
         });
-        
+    }
+    
+    /**
+     * Actionlistener for the Textfield, doing the same as the Confirmbutton
+     */
+    private void addTextfieldActionListener()
+    {
         //Shortcut for enter-key if the _confirmButton is enabled
         _ui.getTextfield().addActionListener(event ->
         {
-            _ui.getConfirmButton().doClick(); //doClick() automatically checks "isEnabled()"
+            _ui.getConfirmButton().doClick(); //doClick() automatically checks "isEnabled()" of the Comfirmbutton
         });
-        
+    }
+    
+    /**
+     * Actionlistener for the Songbutton, opening a Dateieinleser to choose a song from your harddrive
+     * TODO: Save the paths of folder and song on an external file to get back later
+     */
+    private void addSongButtonActionlistener()
+    {
         //Opens a JFileChooser when _stopButton is clicked
         _ui.getSongButton().addActionListener(event ->
         {
-            File songfile = DateiEinleser.liesBilddaten();
             try
             {
-                String newSong = songfile.getPath();
-                _player.setSong(newSong);
-                _ui.setSongText(newSong);
+                File songfile = DateiEinleser.liesDatei();
+                try
+                {
+                    String newSong = songfile.getPath();
+                    _player.setSong(newSong);
+                    _ui.setSongText(newSong);
+                    checkButton();
+                }
+                catch (FileNotFoundException e)
+                {
+                
+                }
             }
-            catch (FileNotFoundException e)
+            catch (NullPointerException n)
             {
-                e.printStackTrace();
+            
             }
             _ui.setSongText(_player.getSongname());
         });
-        
+    }
+    
+    /**
+     * Actionlistener for the Confirmbutton:
+     * If all entries are valid and hence this can be activated, the song gets puts on the list with given delay
+     * and the UI gets closed
+     */
+    private void addConfirmButtonActionlistener()
+    {
         //Actual action if the _confirmButton gets used and processes the entry
         _ui.getConfirmButton().addActionListener(event ->
         {
@@ -117,14 +154,41 @@ public class MusicArea
     }
     
     /**
+     * Checks if all requirements are fulfilled for the song to be played
+     * aka the song is valid and the delay is valid
+     */
+    private void checkButton()
+    {
+        String tmp = _ui.getTextfield().getText();
+        if (isValidEntry(tmp) && isValidSong())
+        {
+            _ui.enableConfirmButton();
+        }
+        else
+        {
+            _ui.disableConfirmButton();
+        }
+    }
+    
+    
+    /**
      * Checks if the input/given string is a number or a negative number
      * TODO: the other matches part
      * @param tmp: checked entry
      * @return boolean: validity of the string
      */
-    private boolean isValid(String tmp)
+    private boolean isValidEntry(String tmp)
     {
         return (tmp.matches("\\d+")); //|| tmp.matches("\\d{1,2}:\\d{2}")
+    }
+    
+    /**
+     * Checks if the given file is actually a song
+     * @return boolean: validity of the song
+     */
+    private boolean isValidSong()
+    {
+        return _player.isValidSong();
     }
     
     /**
@@ -154,5 +218,14 @@ public class MusicArea
     public void showUI()
     {
         _ui.showUI();
+    }
+    
+    /**
+     * Sets the position of the UI (so that it always shows up on top of the main UI)
+     * @param p: The point describing the topleft point of the UI
+     */
+    public void setUiPosition(Point p)
+    {
+        _ui.setPosition(p); //Sets position based on the mainframe
     }
 }

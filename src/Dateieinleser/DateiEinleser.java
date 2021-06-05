@@ -1,7 +1,6 @@
 package Dateieinleser;
 
 import java.io.File;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
@@ -16,7 +15,7 @@ public class DateiEinleser
     /**
      * Lies eine Datei ein und liefere diese. Die Datei wird interaktiv vom Benutzer gewaehlt.
      */
-    public static File liesBilddaten()
+    public static File liesDatei() throws NullPointerException
     {
         if (_fileChooser == null)
         {
