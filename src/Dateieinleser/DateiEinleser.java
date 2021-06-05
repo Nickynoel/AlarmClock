@@ -13,13 +13,25 @@ public class DateiEinleser
     private static JFileChooser _fileChooser = null;
     
     /**
-     * Lies eine Datei ein und liefere diese. Die Datei wird interaktiv vom Benutzer gewaehlt.
+     * Default method, if no path given, choose default path C:/ (rip Linux)
+     * @return the musicfile chosen below
      */
-    public static File liesDatei() throws NullPointerException
+    public static File liesDatei()
     {
+        return liesDatei("C:/");
+    }
+    
+    /**
+     * Lies eine Datei ein und liefere diese. Die Datei wird interaktiv vom Benutzer gewaehlt.
+     * @return Chosen musicfile, null if aborted
+     */
+    public static File liesDatei(String path) throws NullPointerException
+    {
+        assert path != null: "path is null";
+        
         if (_fileChooser == null)
         {
-            _fileChooser = new JFileChooser("D:/Musik");
+            _fileChooser = new JFileChooser(path);
             _frame = new JFrame();
             _frame.pack();
             _frame.setAlwaysOnTop(true);

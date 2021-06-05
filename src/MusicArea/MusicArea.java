@@ -2,6 +2,10 @@ package MusicArea;
 
 import Dateieinleser.DateiEinleser;
 import MP3Player.MP3Player;
+import RowFileReader.RowFilereader;
+import RowFileWriter.RowFileWriter;
+
+import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +23,11 @@ import java.io.FileNotFoundException;
  */
 public class MusicArea
 {
+    private static String SONGINFOFILE = "song.txt";
+    
     private MusicAreaUI _ui;
     private MP3Player _player;
+    private List<String> _songinfo;
     
     private PropertyChangeSupport _support; //basically observable just newer
     
@@ -31,12 +38,50 @@ public class MusicArea
     public MusicArea(MP3Player player)
     {
         assert player != null: "Player must not be null!";
-        
+    
+        _songinfo = loadSongFromFile(SONGINFOFILE);
         _player = player;
         _support = new PropertyChangeSupport(this);
         _ui = new MusicAreaUI();
         _ui.setSongText(_player.getSongname());
+        
+        initiateSongData();
         addListener();
+    }
+    
+    /**
+     * Loads the song.txt file and reads the given path and song of the last title
+     * @param songdatafile: the file with the songdata, given in a file
+     * @return [path, songpath]
+     */
+    private List<String> loadSongFromFile(String songdatafile)
+    {
+        
+        RowFilereader reader = RowFilereader.getInstance(songdatafile);
+        List<String> data = reader.getList();
+        if (data.size() != 2)
+        {
+            data.clear();
+            data.add("C:/");
+            data.add(null);
+        }
+        return data;
+    }
+    
+    /**
+     * Method that sets the saved song as initial song
+     */
+    private void initiateSongData()
+    {
+        try
+        {
+            _player.setSong(_songinfo.get(1));
+            _ui.setSongText(_songinfo.get(1));
+        }
+        catch (FileNotFoundException e)
+        {
+        
+        }
     }
     
     /**
@@ -105,27 +150,41 @@ public class MusicArea
         //Opens a JFileChooser when _stopButton is clicked
         _ui.getSongButton().addActionListener(event ->
         {
+            addDateiEinleserListener();
+            
+            _ui.setSongText(_player.getSongname());
+            RowFileWriter writer = RowFileWriter.getInstance(_songinfo, new File(SONGINFOFILE));
+            writer.saveFile();
+        });
+    }
+    
+    /**
+     * Adds a listener to the DateiEinleser to get the chosen filepath
+     */
+    private void addDateiEinleserListener()
+    {
+        try
+        {
+            File songfile = DateiEinleser.liesDatei(_songinfo.get(0));
             try
             {
-                File songfile = DateiEinleser.liesDatei();
-                try
-                {
-                    String newSong = songfile.getPath();
-                    _player.setSong(newSong);
-                    _ui.setSongText(newSong);
-                    checkButton();
-                }
-                catch (FileNotFoundException e)
-                {
-                
-                }
+                String newSong = songfile.getPath();
+                _player.setSong(newSong);
+                _ui.setSongText(newSong);
+                checkButton();
+    
+                _songinfo.set(1,newSong);
+                _songinfo.set(0,newSong.substring(0,Math.max(newSong.lastIndexOf("/"),newSong.lastIndexOf("\\"))));
             }
-            catch (NullPointerException n)
+            catch (FileNotFoundException e)
             {
             
             }
-            _ui.setSongText(_player.getSongname());
-        });
+        }
+        catch (NullPointerException n)
+        {
+        
+        }
     }
     
     /**
