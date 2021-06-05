@@ -36,7 +36,7 @@ public class AlarmclockUI
      */
     private void createLabels()
     {
-        _timerLabel = new JLabel("<html><span style='font-size:12px'>Total Goaltime:</span></html>");
+        _timerLabel = new JLabel("<html><span style='font-size:12px'>No song set:</span></html>");
     }
     
     /**

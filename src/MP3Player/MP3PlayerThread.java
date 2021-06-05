@@ -44,7 +44,7 @@ public class MP3PlayerThread extends Thread
         {
             while (_threadLife)
             {
-                TimeUnit.SECONDS.sleep(_delay);
+                TimeUnit.MINUTES.sleep(_delay);
                 _playerLife = true;
                 _player = new Player(_song);
                 _player.play();
