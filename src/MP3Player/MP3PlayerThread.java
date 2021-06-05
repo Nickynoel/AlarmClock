@@ -3,6 +3,8 @@ package MP3Player;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.FileInputStream;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +21,8 @@ public class MP3PlayerThread extends Thread
     private boolean _playerLife;
     private int _delay;
     
+    private PropertyChangeSupport _support;
+    
     /**
      * Constructor for the special Thread-class for each song
      * @param delay the delay until the song is supposed to be played
@@ -32,6 +36,7 @@ public class MP3PlayerThread extends Thread
         _threadLife = true;
         _playerLife = false;
         _song = song;
+        _support = new PropertyChangeSupport(this);
     }
     
     /**
@@ -48,7 +53,8 @@ public class MP3PlayerThread extends Thread
                 _playerLife = true;
                 _player = new Player(_song);
                 _player.play();
-                _playerLife = false;
+                
+                _threadLife = false;
             }
             //TimeUnit.MINUTES.sleep(delay);
             //change(1);
@@ -58,6 +64,10 @@ public class MP3PlayerThread extends Thread
         catch (JavaLayerException | InterruptedException e)
         {
             System.out.println(e);
+        }
+        finally
+        {
+            confirmChange(0); //somehow doesnt trigger the textchange
         }
     }
     
@@ -74,4 +84,23 @@ public class MP3PlayerThread extends Thread
         this.interrupt();
     }
     
+    /**
+     * Allows listeners to be added
+     *
+     * @param pcl: the new listener
+     */
+    public void addPropertyChangeListener(PropertyChangeListener pcl)
+    {
+        _support.addPropertyChangeListener(pcl);
+    }
+    
+    /**
+     * Tells the PropertyChangeListeners that a change happens if number!=0
+     *
+     * @param number: the number typed into the textfield
+     */
+    private void confirmChange(int number)
+    {
+        _support.firePropertyChange("Test", -1, number);
+    }
 }

@@ -33,6 +33,14 @@ public class Alarmclock
         _player.addPropertyChangeListener(event ->
         {
             _ui.changeMusicStatus(_player.getStatus());
+            if (_player.getStatus() == 0)
+            {
+                _ui.setTimerLabelText("No song set:");
+            }
+            else if (_player.getStatus() == 2)
+            {
+                _ui.setTimerLabelText("Next song starts at: " + _player.getNextSongTime());
+            }
         });
     }
     
@@ -73,18 +81,19 @@ public class Alarmclock
             final MusicArea area = new MusicArea(_player);
             area.setUiPosition(_ui.getPosition());
             addMusicAreaListener(area);
-
+            
             area.showUI();
         });
     }
     
     /**
      * Adds the Propertychangelistener to a Musicarea
+     *
      * @param area
      */
     private void addMusicAreaListener(MusicArea area)
     {
-        assert area != null: "Musicarea is null";
+        assert area != null : "Musicarea is null";
         area.addPropertyChangeListener(evt ->
         {
             _ui.setTimerLabelText("Next song starts at: " + _player.getNextSongTime());

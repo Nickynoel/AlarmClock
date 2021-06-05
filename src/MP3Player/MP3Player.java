@@ -128,6 +128,11 @@ public class MP3Player
         MP3PlayerThread songThread = new MP3PlayerThread(delay, _song);
         change(2);
         _songThreads.add(songThread);
+        //adds a Listener so the the class knows when the song is over
+        songThread.addPropertyChangeListener(event ->
+        {
+            quit();
+        });
         songThread.start();
     }
     
