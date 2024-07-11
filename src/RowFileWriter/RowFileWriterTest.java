@@ -1,45 +1,33 @@
 package RowFileWriter;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * The Testclass for RowFileWriter
- */
-
 public class RowFileWriterTest
 {
+    List<String> _list = Arrays.asList("test", "t m p");
+    File _testFile = new File("Test.txt");
+
     @Test
-    public void testConstructor()
-    {
-        List<String> list = new ArrayList<>();
-        list.add("test");
-        File file = new File("Test123.txt");
-        
-        //write testfile
-        RowFileWriter wr = RowFileWriter.getInstance(list, file);
+    public void testSaveFile() throws FileNotFoundException {
+        RowFileWriter wr = RowFileWriter.getInstance(_list, _testFile);
+        assertNotNull(wr);
         wr.saveFile();
-        wr.addRow("t m p");
-        
-        //actual testclass
-        try (Scanner res = new Scanner(file))
-        {
-            assertTrue(res.nextLine().equals("test"));
-            assertTrue(res.nextLine().equals("t m p"));
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        
-        //delete testfile
-        file.delete();
+
+        Scanner res = new Scanner(_testFile);
+        assertEquals(res.nextLine(), "test");
+        assertEquals(res.nextLine(), "t m p");
+        res.close();
+
+        assertTrue(_testFile.delete());
     }
 }
