@@ -1,10 +1,10 @@
-package MusicArea;
+package FrontEnd.MusicArea;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * UI of MusicArea
+ * UI of FrontEnd.MusicArea
  */
 
 public class MusicAreaUI
@@ -42,7 +42,7 @@ public class MusicAreaUI
     private void createLabels()
     {
         _timeLabel = new JLabel("Time in minutes/for timer to go:");
-        _songLabel = new JLabel("Songtitle: ");
+        _songLabel = new JLabel("Song Title: ");
     }
     
     /**
@@ -59,11 +59,11 @@ public class MusicAreaUI
     }
     
     /**
-     * Creates the textfield
+     * Creates the textField
      */
     private void createTextField()
     {
-        _timeField = new JTextField("", 5); //number of colomns or dimension
+        _timeField = new JTextField("", 5); //number of columns or dimension
     }
     
     /**
@@ -72,20 +72,20 @@ public class MusicAreaUI
     private void createPanels()
     {
         _topPanel = new JPanel();
-        _topPanel = generateToppanel();
+        _topPanel = generateTopPanel();
         
         _centerPanel = new JPanel();
-        _centerPanel = generateCenterpanel();
+        _centerPanel = generateCenterPanel();
         
         _botPanel = new JPanel();
-        _botPanel = generateBotpanel();
+        _botPanel = generateBotPanel();
     }
     
     /**
      * Initialization of the _topPanel, containing the Label describing the action
      * @return the _topPanel
      */
-    private JPanel generateToppanel()
+    private JPanel generateTopPanel()
     {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
@@ -102,10 +102,10 @@ public class MusicAreaUI
     }
     
     /**
-     * Initialization of the _centerPanel, containing the textfield for the input
+     * Initialization of the _centerPanel, containing the textField for the input
      * @return the _centerPanel
      */
-    private JPanel generateCenterpanel()
+    private JPanel generateCenterPanel()
     {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
@@ -125,7 +125,7 @@ public class MusicAreaUI
      * Initialization of the _botPanel, containing the two buttons for confirming and declining
      * @return the _botPanel
      */
-    private JPanel generateBotpanel()
+    private JPanel generateBotPanel()
     {
         JPanel panel1 = new JPanel();
         panel1.add(_confirmButton);
@@ -176,10 +176,10 @@ public class MusicAreaUI
     }
     
     /**
-     * Returns the timefield of the UI
+     * Returns the timeField of the UI
      * @return _timeField
      */
-    public JTextField getTextfield()
+    public JTextField getTextField()
     {
         return _timeField;
     }
@@ -196,11 +196,11 @@ public class MusicAreaUI
             int index = Math.max(song.indexOf("/"),song.indexOf("\\"));
             song = song.substring(index+1);
         }
-        _songLabel.setText("Songtitle: "+ song);
+        _songLabel.setText("Song Title: "+ song);
     }
     
     /**
-     * Returns the confirmationbutton
+     * Returns the confirmation button
      * @return _confirmButton
      */
     public JButton getConfirmButton()
@@ -234,7 +234,7 @@ public class MusicAreaUI
     }
     
     /**
-     * Sets the UI's visibility to true
+     * Sets the visibility of the UI to true
      */
     public void showUI()
     {

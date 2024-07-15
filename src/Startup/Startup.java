@@ -1,14 +1,10 @@
 package Startup;
 
-import Alarmclock.Alarmclock;
+import FrontEnd.Alarmclock.AlarmClock;
 
-/**
- * Class for simple Startup, opening the mainclass
- */
 public class Startup
 {
-    public static void main(String[] args)
-    {
-        new Alarmclock();
+    public static void main(String[] args) {
+        new AlarmClock();
     }
 }
