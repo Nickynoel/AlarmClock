@@ -1,5 +1,7 @@
 package BackEnd.MP3Player;
 
+import RowFileReader.RowFileReader;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.FileInputStream;
@@ -13,6 +15,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.Line.Info;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Port;
+import javax.swing.*;
 
 /**
  * Class that allows playing one mp3
@@ -20,30 +23,60 @@ import javax.sound.sampled.Port;
 
 public class MP3Player
 {
-    private String _songPath;
-    private FileInputStream _song;
-    private final List<MP3PlayerThread> _songThreads;
-    private float _volume;
-    private int _status; // 0: off, 1: on, 2: waiting
-    private boolean _songValidity;
-
-    private Calendar _nextSongTime;
-    private final PropertyChangeSupport _support; //basically observable just newer
-
-    private MP3Player() {
-        _songThreads = new ArrayList<>();
-        //volume-control, should be set to 0.05f if you don't want your ears to die
-        // ToDo: Manual setting + save value
-        setOutputVolume(0.05f);
-        _status = 0;
-        _support = new PropertyChangeSupport(this);
-    }
+    private final static String SONGINFOFILE = "song.txt";
+    private static MP3Player _singleton;
 
     /**
      * Factory Method to generate an object of the class BackEnd.MP3Player
      */
     public static MP3Player getInstance() {
-        return new MP3Player();
+        if (_singleton == null)
+            _singleton = new MP3Player();
+        return _singleton;
+    }
+
+    //    private List<Song> _songList;
+    private String _songPath;
+    private String _musicFolderPath;
+    private FileInputStream _song;
+    private final List<MP3PlayerThread> _songThreads;
+    private float _volume;
+    private int _status; // 0: off, 1: on, 2: waiting
+
+    private Calendar _nextSongTime;
+
+    private final PropertyChangeSupport _support; //basically observable just newer
+
+    private MP3Player() {
+        _songThreads = new ArrayList<>();
+        //        _songList = new ArrayList<>();
+
+        // Load Values???
+        List<String> songData = loadSongFromFile(SONGINFOFILE);
+        _musicFolderPath = songData.get(0);
+        _songPath = songData.get(1);
+
+        //volume-control, should be set to 0.05f if you don't want your ears to die
+        setOutputVolume(0.05f); // ToDo: Manual setting + save value
+        _status = 0;
+        _support = new PropertyChangeSupport(this);
+    }
+
+    /**
+     * Loads the song.txt file and reads the given path and song of the last title
+     *
+     * @param songDataFile: the file with the song data, given in a file
+     * @return [path, songPath]
+     */
+    private List<String> loadSongFromFile(String songDataFile) {
+        RowFileReader reader = RowFileReader.getInstance(songDataFile);
+        List<String> data = reader.getList();
+        if (data.size() != 2) {
+            data.clear();
+            data.add("C:/");
+            data.add("No Song Found");
+        }
+        return data;
     }
 
     /**
@@ -52,8 +85,8 @@ public class MP3Player
      * @param volume the volume as number between 0.0f and 1.0f
      */
     private void setOutputVolume(Float volume) {
-        volume = volume < 0 ? 0.0f : volume;
-        volume = volume > 1 ? 1.0f : volume;
+        volume = Math.max(0.0f, volume);
+        volume = Math.min(1.0f, volume);
         _volume = volume;
 
         Info source = Port.Info.LINE_OUT; //alternative: HEADPHONE
@@ -63,11 +96,10 @@ public class MP3Player
                 outline.open();
                 FloatControl volumeControl = (FloatControl) outline.getControl(
                         FloatControl.Type.VOLUME);
-                //System.out.println("  volume: " + volumeControl.getValue());
                 volumeControl.setValue(_volume);
             }
             catch (LineUnavailableException ex) {
-                System.err.println("source not supported");
+                javax.swing.JOptionPane.showMessageDialog(new JFrame(), "Source not Supported!");
             }
         }
     }
@@ -78,7 +110,9 @@ public class MP3Player
      *
      * @param delay the downtime till the song should be played (has to be positive)
      */
-    public void addToQueue(int delay) {
+    public void startAlarmClock(int delay) {
+        //        addToSongList();
+        //        updateNextSongTime();
         delay = Math.max(delay, 0);
         //"For now only one song-request at a time";
         if (_status == 0) {
@@ -139,8 +173,8 @@ public class MP3Player
      *
      * @return _song
      */
-    public String getSongName() {
-        return _song == null ? "Choose a song!" : _songPath;
+    public String getSongPath() {
+        return _songPath;
     }
 
     /**
@@ -176,7 +210,6 @@ public class MP3Player
     public void setSong(String songPath) throws FileNotFoundException {
         _song = new FileInputStream(songPath);
         _songPath = songPath;
-        _songValidity = true;
     }
 
     /**
@@ -190,13 +223,20 @@ public class MP3Player
         change(0);
     }
 
-    /**
-     * Checks if the file is a playable song
-     *
-     * @return boolean: Validity of the song
-     */
-    public boolean isValidSong() {
-        return _songValidity;
+    public String getMusicFolderPath() {
+        return _musicFolderPath;
+    }
+
+    public void setSongPath(String songPath) {
+        _songPath = songPath;
+    }
+
+    public void setMusicFolderPath(String musicFolderPath) {
+        _musicFolderPath = musicFolderPath;
+    }
+
+    public void saveSongData() {
+        // ToDo: Save the _songPath and _musicFolderPath to the song.txt
     }
 }
 

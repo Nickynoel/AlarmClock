@@ -1,4 +1,4 @@
-package FrontEnd.Dateieinleser;
+package FrontEnd.SubComponents.FilePicker;
 
 import java.io.File;
 import javax.swing.JFileChooser;

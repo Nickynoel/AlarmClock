@@ -1,12 +1,12 @@
 package FrontEnd.Alarmclock;
 
 import BackEnd.MP3Player.MP3Player;
-import FrontEnd.MusicArea.MusicArea;
+import FrontEnd.SubComponents.MusicArea.MusicArea;
 
 /**
  * Main functional class of the AlarmClock, consisting of:
  * _ui: UI to navigate
- * _player: BackEnd.MP3Player to play music
+ * _player: MP3Player to play music
  */
 
 public class AlarmClock
@@ -66,23 +66,17 @@ public class AlarmClock
      */
     private void addTimerButtonListener() {
         _ui.getTimerButton().addActionListener(event -> {
-            final MusicArea area = new MusicArea(_player);
+            final MusicArea area = new MusicArea();
             area.setUiPosition(_ui.getPosition());
-            addMusicAreaListener(area);
+            area.addPropertyChangeListener(evt -> {
+                _ui.setTimerLabelText("Next song starts at: " + _player.getNextSongTime());
+            });
+
 
             area.showUI();
         });
     }
 
-    /**
-     * Adds the PropertyChangeListener to a MusicArea
-     */
-    private void addMusicAreaListener(MusicArea area) {
-        assert area != null : "MusicArea is null";
-
-        area.addPropertyChangeListener(
-                evt -> _ui.setTimerLabelText("Next song starts at: " + _player.getNextSongTime()));
-    }
 
     /**
      * Listener for the CloseButton
