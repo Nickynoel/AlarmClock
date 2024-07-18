@@ -56,8 +56,4 @@ public class Song
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         _support.addPropertyChangeListener(pcl);
     }
-
-    public void addThreadPropertyChangeListener(PropertyChangeListener pcl) {
-        _songThread.addPropertyChangeListener(pcl);
-    }
 }

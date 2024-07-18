@@ -1,9 +1,11 @@
 package BackEnd.MP3Player;
 
 import RowFileReader.RowFileReader;
+import RowFileWriter.RowFileWriter;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,11 +20,12 @@ import javax.swing.*;
 
 /**
  * Class that allows playing one mp3
+ * TODO: Kill thread after song is over
  */
 
 public class MP3Player
 {
-    private final static String SONGINFOFILE = "song.txt";
+    private final static String _SONGINFOFILE = "song.txt";
     private static MP3Player _singleton;
 
     /**
@@ -34,7 +37,7 @@ public class MP3Player
         return _singleton;
     }
 
-    private String _songPath;
+    private String _defaultSongPath;
     private String _musicFolderPath;
     private final List<Song> _songList;
 
@@ -48,13 +51,19 @@ public class MP3Player
     private MP3Player() {
         _songList = new ArrayList<>();
 
-        // Load Values???
-        List<String> songData = loadSongFromFile(SONGINFOFILE);
+        // Load Values from file
+        List<String> songData = loadSongFromFile(_SONGINFOFILE);
         _musicFolderPath = songData.get(0);
-        _songPath = songData.get(1);
+        _defaultSongPath = songData.get(1);
+        try {
+            _volume = Float.parseFloat(songData.get(2));
+        }
+        catch (NullPointerException | NumberFormatException e){
+            _volume = 0.05f;
+        }
 
         //volume-control, should be set to 0.05f if you don't want your ears to die
-        setOutputVolume(0.05f); // ToDo: Manual setting + save value
+        setOutputVolume(_volume);
         _status = 0;
         _support = new PropertyChangeSupport(this);
     }
@@ -68,10 +77,11 @@ public class MP3Player
     private List<String> loadSongFromFile(String songDataFile) {
         RowFileReader reader = RowFileReader.getInstance(songDataFile);
         List<String> data = reader.getList();
-        if (data.size() != 2) {
+        if (data.size() != 3) {
             data.clear();
             data.add("C:/");
             data.add("No Song Found");
+            data.add("" + 0.05f);
         }
         return data;
     }
@@ -114,11 +124,8 @@ public class MP3Player
             updateNextSongTime(delay);
             changeStatus(2);
             try {
-                Song song = new Song(_songPath, delay);
+                Song song = new Song(_defaultSongPath, delay);
                 song.addPropertyChangeListener(event -> {
-                    changeStatus(0);
-                });
-                song.addThreadPropertyChangeListener(event -> {
                     changeStatus(0);
                 });
                 _songList.add(song);
@@ -171,7 +178,7 @@ public class MP3Player
      * @return _song
      */
     public String getSongPath() {
-        return _songPath;
+        return _defaultSongPath;
     }
 
     /**
@@ -205,7 +212,7 @@ public class MP3Player
      * @throws FileNotFoundException filepath has to be valid
      */
     public void changeDefaultSong(String songPath) throws FileNotFoundException {
-        _songPath = songPath;
+        _defaultSongPath = songPath;
     }
 
     public void stopCurrentSong() {
@@ -218,7 +225,7 @@ public class MP3Player
     }
 
     public void setSongPath(String songPath) {
-        _songPath = songPath;
+        _defaultSongPath = songPath;
     }
 
     public void setMusicFolderPath(String musicFolderPath) {
@@ -226,12 +233,24 @@ public class MP3Player
     }
 
     public void saveSongData() {
-        // ToDo: Save the _songPath and _musicFolderPath to the song.txt
+        List<String> list = new ArrayList<>();
+        list.add(_musicFolderPath);
+        list.add(_defaultSongPath);
+        list.add("" + _volume);
+
+        RowFileWriter writer = RowFileWriter.getInstance(list, new File(_SONGINFOFILE));
+        if (writer != null) {
+            writer.saveFile();
+        }
     }
 
+    /**
+     * Tries to remove all remaining threads...
+     */
     public void close() {
         if(!_songList.isEmpty())
             _songList.get(0).stopThread();
+        _songList.clear();
     }
 }
 

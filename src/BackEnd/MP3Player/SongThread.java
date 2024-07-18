@@ -67,12 +67,13 @@ public class SongThread extends Thread
             //change(1);
             //change(0);
         }
+//        catch (InterruptedException e) {
         catch (InterruptedException | JavaLayerException e) {
             // Do nothing
         }
         finally {
             //somehow doesn't trigger the text change
-            _support.firePropertyChange("Test", -1, 0);
+            _support.firePropertyChange("Kill Thread", -1, 0);
             kill();
         }
     }
