@@ -75,6 +75,7 @@ public class SongThread extends Thread
             //somehow doesn't trigger the text change
             _support.firePropertyChange("Kill Thread", -1, 0);
             kill();
+            return;
         }
     }
 
