@@ -21,8 +21,8 @@ import java.io.FileNotFoundException;
 public class MusicArea
 {
     private final MP3Player _player;
-    private final PropertyChangeSupport _support; //basically observable just newer
     private final MusicAreaUI _ui;
+    private final PropertyChangeSupport _support; //basically observable just newer
 
     private String _musicFolderPath;
     private String _songPath;
@@ -32,12 +32,12 @@ public class MusicArea
      */
     public MusicArea() {
         _player = MP3Player.getInstance();
+        _ui = new MusicAreaUI();
         _support = new PropertyChangeSupport(this);
         _musicFolderPath = _player.getMusicFolderPath();
         _songPath = _player.getSongPath();
-        _ui = new MusicAreaUI();
-        _ui.setSongText(_songPath);
 
+        _ui.setSongText(_songPath);
         addUIListeners();
     }
 
@@ -89,7 +89,7 @@ public class MusicArea
                 File songfile = FilePicker.pickFile(_player.getMusicFolderPath());
 
                 String newSong = songfile.getPath();
-                _player.setSong(newSong);
+                _player.changeDefaultSong(newSong);
                 _ui.setSongText(newSong);
                 validateEntries();
 

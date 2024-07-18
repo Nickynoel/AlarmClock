@@ -152,8 +152,6 @@ public class AlarmClockUI
      * @param text: text to be shown on the _timerLabel
      */
     public void setTimerLabelText(String text) {
-        assert text != null : "text is null!";
-
         _timerLabel.setText("<html><span style='font-size:11px'>" + text + "</span></html>");
     }
 

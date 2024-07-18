@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * TODO: Status change
  */
 
-public class MP3PlayerThread extends Thread
+public class SongThread extends Thread
 {
     private final FileInputStream _song;
     private Player _player;
@@ -30,10 +30,8 @@ public class MP3PlayerThread extends Thread
      * @param delay the delay until the song is supposed to be played
      * @param song  the song to be played
      */
-    public MP3PlayerThread(int delay, FileInputStream song) {
-        assert delay >= 0 : "Delay must not be negative!";
-        assert song != null : "Song is null!";
-        _delay = delay;
+    public SongThread(FileInputStream song, int delay) {
+        _delay = Math.max(0, delay);
         _threadLife = true;
         _playerLife = false;
         _song = song;
@@ -53,6 +51,7 @@ public class MP3PlayerThread extends Thread
 
     /**
      * run method, that will be used on a new thread by calling the start method
+     * has to be overwritten to work TODO: Really? - Parameter Delay Test
      */
     @Override
     public void run() {

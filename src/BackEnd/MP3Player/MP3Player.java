@@ -4,7 +4,6 @@ import RowFileReader.RowFileReader;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +26,7 @@ public class MP3Player
     private static MP3Player _singleton;
 
     /**
-     * Factory Method to generate an object of the class BackEnd.MP3Player
+     * Factory Method to generate an object of the class MP3Player
      */
     public static MP3Player getInstance() {
         if (_singleton == null)
@@ -35,11 +34,10 @@ public class MP3Player
         return _singleton;
     }
 
-    //    private List<Song> _songList;
     private String _songPath;
     private String _musicFolderPath;
-    private FileInputStream _song;
-    private final List<MP3PlayerThread> _songThreads;
+    private final List<Song> _songList;
+
     private float _volume;
     private int _status; // 0: off, 1: on, 2: waiting
 
@@ -48,8 +46,7 @@ public class MP3Player
     private final PropertyChangeSupport _support; //basically observable just newer
 
     private MP3Player() {
-        _songThreads = new ArrayList<>();
-        //        _songList = new ArrayList<>();
+        _songList = new ArrayList<>();
 
         // Load Values???
         List<String> songData = loadSongFromFile(SONGINFOFILE);
@@ -111,31 +108,31 @@ public class MP3Player
      * @param delay the downtime till the song should be played (has to be positive)
      */
     public void startAlarmClock(int delay) {
-        //        addToSongList();
-        //        updateNextSongTime();
-        delay = Math.max(delay, 0);
-        //"For now only one song-request at a time";
+        delay = Math.max(0, delay);
+        // (For now) only one song-request at a time
         if (_status == 0) {
-            _nextSongTime = Calendar.getInstance();
-            _nextSongTime.add(Calendar.MINUTE, delay);
-            change(2);
-            run(delay);
+            updateNextSongTime(delay);
+            changeStatus(2);
+            try {
+                Song song = new Song(_songPath, delay);
+                song.addPropertyChangeListener(event -> {
+                    changeStatus(0);
+                });
+                song.addThreadPropertyChangeListener(event -> {
+                    changeStatus(0);
+                });
+                _songList.add(song);
+                song.runThread();
+            }
+            catch (FileNotFoundException e) {
+                javax.swing.JOptionPane.showMessageDialog(new JFrame(), "File could not be found!");
+            }
         }
     }
 
-    /**
-     * Plays the song on the given Thread and commits the change
-     *
-     * @param delay: delay until the song is to be played
-     */
-    private void run(int delay) {
-        delay = Math.max(delay, 0);
-        MP3PlayerThread songThread = new MP3PlayerThread(delay, _song);
-        change(2);
-        _songThreads.add(songThread);
-        //adds a Listener so the class knows when the song is over
-        songThread.addPropertyChangeListener(event -> quit());
-        songThread.start();
+    private void updateNextSongTime(int delay) {
+        _nextSongTime = Calendar.getInstance();
+        _nextSongTime.add(Calendar.MINUTE, delay);
     }
 
     /**
@@ -143,7 +140,7 @@ public class MP3Player
      *
      * @param i 0,1,2 (stop, run, ready)
      */
-    private void change(int i) {
+    private void changeStatus(int i) {
         assert (i == 0 || i == 1 || i == 2) : "Only 3 viable _status-values";
         _status = i;
         confirmChange(i);
@@ -155,7 +152,7 @@ public class MP3Player
      * @param number: the number typed into the textField
      */
     private void confirmChange(int number) {
-        assert (number == 0 || number == 1 || number == 2) : "Only 3 viable _status-values";
+        //        assert (number == 0 || number == 1 || number == 2) : "Only 3 viable _status-values";
         _support.firePropertyChange("Test", -1, number);
     }
 
@@ -207,20 +204,13 @@ public class MP3Player
      * @param songPath String with the filepath of the song
      * @throws FileNotFoundException filepath has to be valid
      */
-    public void setSong(String songPath) throws FileNotFoundException {
-        _song = new FileInputStream(songPath);
+    public void changeDefaultSong(String songPath) throws FileNotFoundException {
         _songPath = songPath;
     }
 
-    /**
-     * Quits the current thread and stops its song, if it is running already
-     */
-    public void quit() {
-        if (!_songThreads.isEmpty()) {
-            _songThreads.get(0).kill();
-            _songThreads.remove(0);
-        }
-        change(0);
+    public void stopCurrentSong() {
+        _songList.get(0).stopThread();
+        _songList.clear();
     }
 
     public String getMusicFolderPath() {
@@ -237,6 +227,11 @@ public class MP3Player
 
     public void saveSongData() {
         // ToDo: Save the _songPath and _musicFolderPath to the song.txt
+    }
+
+    public void close() {
+        if(!_songList.isEmpty())
+            _songList.get(0).stopThread();
     }
 }
 
