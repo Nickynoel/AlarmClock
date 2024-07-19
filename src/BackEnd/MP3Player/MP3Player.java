@@ -125,9 +125,7 @@ public class MP3Player
             changeStatus(2);
             try {
                 Song song = new Song(_defaultSongPath, delay);
-                song.addPropertyChangeListener(event -> {
-                    changeStatus((int) event.getNewValue());
-                });
+                song.addPropertyChangeListener(event -> changeStatus((int) event.getNewValue()));
                 _songList.add(song);
                 song.runThread();
             }

@@ -10,10 +10,11 @@ public class Song
     //    private final String _filePath;
     //    private final int _delay; // 0 if actual MP3-Player
 
-    private SongThread _songThread;
+    private final SongThread _songThread;
+    private final PropertyChangeSupport _support;
+
     private boolean _isStarted;
 
-    private final PropertyChangeSupport _support;
 
     public Song(String path, int delay) throws FileNotFoundException {
         //        _filePath = path;
