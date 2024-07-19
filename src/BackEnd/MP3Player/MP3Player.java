@@ -148,19 +148,8 @@ public class MP3Player
      * @param i 0,1,2 (stop, run, ready)
      */
     private void changeStatus(int i) {
-        assert (i == 0 || i == 1 || i == 2) : "Only 3 viable _status-values";
         _status = i;
-        confirmChange(i);
-    }
-
-    /**
-     * Tells the PropertyChangeListeners that a change happens if number!=0
-     *
-     * @param number: the number typed into the textField
-     */
-    private void confirmChange(int number) {
-        //        assert (number == 0 || number == 1 || number == 2) : "Only 3 viable _status-values";
-        _support.firePropertyChange("Test", -1, number);
+        _support.firePropertyChange("Test", -1, i);
     }
 
     /**
@@ -217,7 +206,8 @@ public class MP3Player
 
     public void stopCurrentSong() {
         _songList.get(0).stopThread();
-        _songList.clear();
+        _songList.remove(0);
+        changeStatus(0);
     }
 
     public String getMusicFolderPath() {

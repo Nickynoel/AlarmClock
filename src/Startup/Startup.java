@@ -1,5 +1,9 @@
 package Startup;
 
+/*
+ * TODO: 1. Update JLabel after song is finished - code is reached, text supposedly set, but JLabel empty
+ */
+
 import FrontEnd.Alarmclock.AlarmClock;
 
 public class Startup

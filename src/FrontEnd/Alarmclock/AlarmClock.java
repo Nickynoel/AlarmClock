@@ -74,7 +74,7 @@ public class AlarmClock
         _player.addPropertyChangeListener(event -> {
             _ui.changeMusicStatus(_player.getStatus());
             if (_player.getStatus() == 0) {
-                _ui.setTimerLabelText("No song set:");
+                _ui.setTimerLabelText("No song set:"); //ToDo: Number 1
             }
             else if (_player.getStatus() == 2) {
                 _ui.setTimerLabelText("Next song starts at: " + _player.getNextSongTime());
