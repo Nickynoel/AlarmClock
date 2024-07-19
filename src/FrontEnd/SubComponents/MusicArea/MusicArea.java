@@ -22,7 +22,7 @@ public class MusicArea
 {
     private final MP3Player _player;
     private final MusicAreaUI _ui;
-    private final PropertyChangeSupport _support; //basically observable just newer
+    private final PropertyChangeSupport _support; // basically observable just newer
 
     private String _musicFolderPath;
     private String _songPath;
@@ -154,13 +154,13 @@ public class MusicArea
 
     /**
      * Checks if the input/given string is a number or a negative number
-     * TODO: the other matches part (also matches with xx:xx)?
+     * TODO: Number 2
      *
      * @param tmp: checked entry
      * @return boolean: validity of the string
      */
     private boolean isValidEntry(String tmp) {
-        return (tmp.matches("\\d+")); //|| tmp.matches("\\d{1,2}:\\d{2}")
+        return tmp.matches("\\d+"); // || tmp.matches("\\d{1,2}:\\d{2}")
     }
 
     /**

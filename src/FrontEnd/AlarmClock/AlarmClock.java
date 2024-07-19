@@ -1,4 +1,4 @@
-package FrontEnd.Alarmclock;
+package FrontEnd.AlarmClock;
 
 import BackEnd.MP3Player.MP3Player;
 import FrontEnd.SubComponents.MusicArea.MusicArea;
@@ -74,7 +74,10 @@ public class AlarmClock
         _player.addPropertyChangeListener(event -> {
             _ui.changeMusicStatus(_player.getStatus());
             if (_player.getStatus() == 0) {
-                _ui.setTimerLabelText("No song set:"); //ToDo: Number 1
+                _ui.setTimerLabelText("No song set:");
+            }
+            else if (_player.getStatus() == 1) {
+                _ui.setTimerLabelText("Song is playing!");
             }
             else if (_player.getStatus() == 2) {
                 _ui.setTimerLabelText("Next song starts at: " + _player.getNextSongTime());

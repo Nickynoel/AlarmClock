@@ -1,5 +1,6 @@
 package BackEnd.MP3Player;
 
+import BackEnd.Song.Song;
 import RowFileReader.RowFileReader;
 import RowFileWriter.RowFileWriter;
 
@@ -20,7 +21,6 @@ import javax.swing.*;
 
 /**
  * Class that allows playing one mp3
- * TODO: Kill thread after song is over
  */
 
 public class MP3Player
@@ -126,7 +126,7 @@ public class MP3Player
             try {
                 Song song = new Song(_defaultSongPath, delay);
                 song.addPropertyChangeListener(event -> {
-                    changeStatus(0);
+                    changeStatus((int) event.getNewValue());
                 });
                 _songList.add(song);
                 song.runThread();

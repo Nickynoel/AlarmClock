@@ -1,4 +1,4 @@
-package BackEnd.MP3Player;
+package BackEnd.Song;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -7,16 +7,17 @@ import java.io.FileNotFoundException;
 
 public class Song
 {
-    private final String _filePath;
+    //    private final String _filePath;
+    //    private final int _delay; // 0 if actual MP3-Player
+
     private SongThread _songThread;
     private boolean _isStarted;
-    private final int _delay; // 0 if actual MP3-Player
 
     private final PropertyChangeSupport _support;
 
     public Song(String path, int delay) throws FileNotFoundException {
-        _filePath = path;
-        _delay = delay;
+        //        _filePath = path;
+        //        _delay = delay;
         _isStarted = false;
         _songThread = new SongThread(new FileInputStream(path), delay);
 
@@ -28,7 +29,12 @@ public class Song
      */
     public void runThread() {
         //adds a Listener so the class knows when the song is over
-        _songThread.addPropertyChangeListener(event -> stopThread());
+        _songThread.addPropertyChangeListener(event -> {
+            if ((int) event.getNewValue() == 0)
+                stopThread();
+            else if ((int) event.getNewValue() == 1)
+                _support.firePropertyChange("Test", -1, 1);
+        });
         _isStarted = true;
         _songThread.start();
     }
@@ -42,10 +48,6 @@ public class Song
             _isStarted = false;
             _support.firePropertyChange("Test", -1, 0);
         }
-    }
-
-    public boolean getIsStarted(){
-        return _isStarted;
     }
 
     /**

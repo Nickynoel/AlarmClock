@@ -1,4 +1,4 @@
-package BackEnd.MP3Player;
+package BackEnd.Song;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
@@ -11,18 +11,18 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Class that handles the playing of a song on an extra Thread
- * TODO: Status change
  */
 
 public class SongThread extends Thread
 {
     private final FileInputStream _song;
-    private Player _player;
-    private boolean _threadLife;
-    private boolean _playerLife;
     private final int _delay;
-
     private final PropertyChangeSupport _support;
+
+    private Player _player;
+    private boolean _threadLife; // time the run-function is running, basically when the song is playing
+    private boolean _playerLife; // time _player is alive - needs Thread to allow actions while song is playing
+
 
     /**
      * Constructor for the special Thread-class for each song
@@ -51,7 +51,7 @@ public class SongThread extends Thread
 
     /**
      * run method, that will be used on a new thread by calling the start method
-     * has to be overwritten to work TODO: Really? - Parameter Delay Test
+     * has to be overwritten to work, cause start() triggers run()
      */
     @Override
     public void run() {
@@ -60,19 +60,17 @@ public class SongThread extends Thread
                 TimeUnit.MINUTES.sleep(_delay);
 
                 _playerLife = true;
-                _player.play();
+                _support.firePropertyChange("Player Running", -1, 1);
+                _player.play(500);
                 _threadLife = false;
             }
-            //TimeUnit.MINUTES.sleep(delay);
-            //change(1);
-            //change(0);
         }
 //        catch (InterruptedException e) {
         catch (InterruptedException | JavaLayerException e) {
             // Do nothing
         }
         finally {
-            //somehow doesn't trigger the text change
+            //somehow doesn't trigger the text change // ToDo 1
             _support.firePropertyChange("Kill Thread", -1, 0);
             kill();
             return;

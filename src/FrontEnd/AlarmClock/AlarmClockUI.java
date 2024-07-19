@@ -1,4 +1,4 @@
-package FrontEnd.Alarmclock;
+package FrontEnd.AlarmClock;
 
 import javax.swing.*;
 import java.awt.*;
